@@ -32,8 +32,5 @@ public class RideRequest {
     private Rider rider;
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
     private RideRequestStatus rideRequestStatus;
 }

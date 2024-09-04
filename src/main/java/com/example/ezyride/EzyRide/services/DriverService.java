@@ -3,9 +3,11 @@ package com.example.ezyride.EzyRide.services;
 import com.example.ezyride.EzyRide.dtos.DriverDto;
 import com.example.ezyride.EzyRide.dtos.RideDto;
 import com.example.ezyride.EzyRide.dtos.RiderDto;
+import com.example.ezyride.EzyRide.entities.Driver;
 import org.locationtech.jts.geom.Point;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DriverService {
 
@@ -23,5 +25,6 @@ public interface DriverService {
 
     List<RideDto> getAllMyRides();
 
-    void updateDriverLocation(Long driverId, Point newLocation);
+    void updateDriverLocation(Point newLocation);
+
 }

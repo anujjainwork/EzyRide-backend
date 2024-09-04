@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RiderRepository extends JpaRepository<Rider,Long> {
+    Object findByEmail(String email);
 }

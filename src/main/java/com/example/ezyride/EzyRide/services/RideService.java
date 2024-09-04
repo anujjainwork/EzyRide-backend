@@ -1,5 +1,6 @@
 package com.example.ezyride.EzyRide.services;
 
+import com.example.ezyride.EzyRide.dtos.RideDto;
 import com.example.ezyride.EzyRide.dtos.RideRequestDto;
 import com.example.ezyride.EzyRide.entities.Driver;
 import com.example.ezyride.EzyRide.entities.Ride;
@@ -10,9 +11,7 @@ public interface RideService {
 
     Ride getRideById(Long rideId);
 
-    void matchWithDrivers(RideRequestDto rideRequestDto);
-
-    Ride createNewRide(RideRequestDto rideRequestDto, Driver driver);
+    RideDto createNewRide(RideRequestDto rideRequestDto, String driverId, Long riderId);
 
     Page<Ride> getAllRidesOfRider(Long riderId, PageRequest pageRequest);
 

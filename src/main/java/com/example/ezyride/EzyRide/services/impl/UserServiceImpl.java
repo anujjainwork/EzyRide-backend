@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,14 +21,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
 
     private final UserRepository userRepository;
+
     private final ModelMapper modelMapper;
+
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
     //this method will be used by spring security to authenticate the user
@@ -35,6 +42,11 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .orElseThrow(()-> new ResourceNotFoundException("User with username" + username + "not found"));
+    }
+
+    public User getUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException("User with id" + userId + "not found"));
     }
 
     public List<UserDto> getAllUsers() {
@@ -47,6 +59,11 @@ public class UserServiceImpl implements UserService {
                         user.getRoles()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public UserDto getAuthenticatedUserDetails() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return modelMapper.map(getUserById(user.getId()),UserDto.class);
     }
 
 }

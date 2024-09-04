@@ -3,6 +3,7 @@ package com.example.ezyride.EzyRide.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -13,13 +14,13 @@ import java.time.LocalDateTime;
 public class Rider {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime createdAt;
 
-    @OneToOne
-    @JoinTable(name="user_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true) // Reference to User
     private User user;
 
     private String name;
@@ -27,6 +28,7 @@ public class Rider {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Column(columnDefinition = "Geometry(Point,4326)")
@@ -35,4 +37,7 @@ public class Rider {
     private Double rating;
 
     private String emrgncycontactno;
+
+    @Column(unique = true)
+    private String roll_no;
 }
