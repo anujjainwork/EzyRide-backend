@@ -5,4 +5,4 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17.0.1-jdk-slim
 COPY --from=build /target/EzyRide-0.0.1-SNAPSHOT.jar EzyRide.jar
 EXPOSE 8080
-ENTRYPOINT["java","-jar","EzyRide.jar"]
+ENTRYPOINT ["java","-jar","EzyRide.jar"]
