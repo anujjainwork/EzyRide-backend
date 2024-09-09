@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:13
+    container_name: ezyride-postgres
+    environment:
+      POSTGRES_USER: anooj
+      POSTGRES_PASSWORD: 1998
+      POSTGRES_DB: EzyRide
+    ports:
+      - "5432:5432"
+    networks:
+      - ezyride-network
+
+  springboot:
+    image: spring-boot-render
+    container_name: ezyride-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/EzyRide_dev
+      SPRING_DATASOURCE_USERNAME: anooj
+      SPRING_DATASOURCE_PASSWORD: 1998
+    networks:
+      - ezyride-network
+
+networks:
+  ezyride-network:
+    driver: bridge
