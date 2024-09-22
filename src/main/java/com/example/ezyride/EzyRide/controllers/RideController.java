@@ -3,6 +3,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import com.example.ezyride.EzyRide.apiresponses.StandardApiResponse;
 import com.example.ezyride.EzyRide.dtos.*;
+import com.example.ezyride.EzyRide.entities.enums.RideStatus;
 import com.example.ezyride.EzyRide.handlers.RideRequestWebSocketHandler;
 import com.example.ezyride.EzyRide.services.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import java.util.List;
 
@@ -132,7 +131,7 @@ public class RideController {
                     return ResponseEntity.ok(new StandardApiResponse<>(1, 200, "OTP verified, ride confirmed.", rideDto));
                 } else {
                     return ResponseEntity.status(HttpStatus.OK)
-                            .body(new StandardApiResponse<>(0, 200, "OTP verified, but ride was declined by the driver.", null));
+                            .body(new StandardApiResponse<>(0, 201, "OTP verified, but ride was declined by the driver.", null));
                 }
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -141,6 +140,99 @@ public class RideController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new StandardApiResponse<>(0, 403, "Authentication failed: invalid token", null));
     }
+
+    @PostMapping("/startride")
+    public ResponseEntity<StandardApiResponse<String>> startRide(@RequestBody RideDto rideDto){
+        DriverDto driverDto = driverService.getAuthenticatedDriverDetails();
+        if(driverDto != null){
+            rideService.startRide(rideDto);
+            if(rideDto.getRideStatus() == RideStatus.STARTED){
+                StandardApiResponse<String> response = new StandardApiResponse<>(
+                  1,
+                  200,
+                  "Ride started",
+                  "STARTED"
+                );
+                return ResponseEntity.ok(response);
+            }
+            StandardApiResponse<String> responseNotStarted = new StandardApiResponse<>(
+                    1,
+                    201,
+                    "Error",
+                    "Ride status is not equal to 'STARTED'"
+            );
+            return ResponseEntity.ok(responseNotStarted);
+        }
+        StandardApiResponse<String> responseNotFound = new StandardApiResponse<>(
+                1,
+                404,
+                "Error",
+                "Not authenticated driver"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseNotFound);
+    }
+
+    @PostMapping("/endride")
+    public ResponseEntity<StandardApiResponse<String>> endRide(@RequestBody RideDto rideDto){
+        DriverDto driverDto = driverService.getAuthenticatedDriverDetails();
+        if(driverDto != null){
+            rideService.endRide(rideDto);
+            if(rideDto.getRideStatus() == RideStatus.ENDED){
+                StandardApiResponse<String> response = new StandardApiResponse<>(
+                        1,
+                        200,
+                        "Ride ended",
+                        "ENDED"
+                );
+                return ResponseEntity.ok(response);
+            }
+            StandardApiResponse<String> responseNotStarted = new StandardApiResponse<>(
+                    1,
+                    201,
+                    "Error",
+                    "Ride status is not equal to 'ENDED'"
+            );
+            return ResponseEntity.ok(responseNotStarted);
+        }
+        StandardApiResponse<String> responseNotFound = new StandardApiResponse<>(
+                1,
+                404,
+                "Error",
+                "Not authenticated driver"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseNotFound);
+    }
+    @PostMapping("/cancelride")
+    public ResponseEntity<StandardApiResponse<String>> cancelRide(@RequestBody RideDto rideDto){
+        DriverDto driverDto = driverService.getAuthenticatedDriverDetails();
+        if(driverDto != null){
+            rideService.cancelRide(rideDto);
+            if(rideDto.getRideStatus() == RideStatus.CANCELLED){
+                StandardApiResponse<String> response = new StandardApiResponse<>(
+                        1,
+                        200,
+                        "Ride cancelled",
+                        "CANCELLED"
+                );
+                return ResponseEntity.ok(response);
+            }
+            StandardApiResponse<String> responseNotStarted = new StandardApiResponse<>(
+                    1,
+                    201,
+                    "Error",
+                    "Ride status is not equal to 'CANCELLED'"
+            );
+            return ResponseEntity.ok(responseNotStarted);
+        }
+        StandardApiResponse<String> responseNotFound = new StandardApiResponse<>(
+                1,
+                404,
+                "Error",
+                "Not authenticated driver"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseNotFound);
+    }
+
 
 
 }

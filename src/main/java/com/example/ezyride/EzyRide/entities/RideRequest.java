@@ -25,11 +25,16 @@ public class RideRequest {
     @Column(columnDefinition = "Geometry(Point,4326)")
     private Point dropOffLocation;
 
+    private String dropOffLocationName;
+
     @CreationTimestamp
     private LocalDateTime requestedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Rider rider;
+
+    @Column(nullable = false, columnDefinition = "int default 1")
+    private int totalRiders;
 
     @Enumerated(EnumType.STRING)
     private RideRequestStatus rideRequestStatus;

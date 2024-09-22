@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -26,6 +27,9 @@ public class RideDto {
     private Point pickUpLocation;
     @JsonSerialize(using = PointSerializer.class)
     private Point dropOffLocation;
+
+    private String dropOffLocationName;
+
     @JsonSerialize(using = PointSerializer.class)
     private Point currentLocation;
 
@@ -33,7 +37,9 @@ public class RideDto {
 
     private LocalDateTime endedTime;
 
-    private RiderDto rider;
+    private List<RideDto> rider;
+
+    private int total_riders;
 
     private DriverDto driver;
 

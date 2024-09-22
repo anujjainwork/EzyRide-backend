@@ -5,6 +5,8 @@ import com.example.ezyride.EzyRide.dtos.RideRequestDto;
 import com.example.ezyride.EzyRide.services.impl.RideRequestService;
 import com.example.ezyride.EzyRide.services.impl.RideServiceImpl;
 import com.example.ezyride.EzyRide.services.impl.RiderServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +29,12 @@ public class RideRequestWebSocketHandler extends TextWebSocketHandler {
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final RideRequestService rideRequestService;
+    private final ObjectMapper objectMapper;
 
-    public RideRequestWebSocketHandler(RideRequestService rideRequestService) {
+
+    public RideRequestWebSocketHandler(RideRequestService rideRequestService, ObjectMapper objectMapper) {
         this.rideRequestService = rideRequestService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -78,14 +84,20 @@ public class RideRequestWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public void sendRideRequestToDriver(String driverName) {
+    public void sendRideRequestToDriver(String driverName, RideRequestDto rideRequestDto) {
         System.out.println("Attempting to send RIDE_REQUESTED to driverName: " + driverName);
         System.out.println("Current sessions: " + sessions);
         WebSocketSession session = sessions.get(driverName);  // Retrieve session using driverName
+
+        Map<String, Object> rideRequestMap = new HashMap<>();
+        rideRequestMap.put("messageType", "RIDE_REQUESTED");  // This is the ride request type
+        rideRequestMap.put("rideRequestData", rideRequestDto); // Include the RideRequestDto
+
         if (session != null && session.isOpen()) {
             try {
-                String rideRequest = "RIDE_REQUESTED";  // This could be serialized JSON or another message format
-                session.sendMessage(new TextMessage(rideRequest));
+                // Serialize the map to JSON
+                String rideRequestJson = objectMapper.writeValueAsString(rideRequestMap);
+                session.sendMessage(new TextMessage(rideRequestJson));
                 System.out.println("RIDE_REQUESTED sent to driverName: " + driverName);
             } catch (Exception e) {
                 e.printStackTrace();

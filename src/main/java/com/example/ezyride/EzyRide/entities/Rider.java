@@ -40,4 +40,5 @@ public class Rider {
 
     @Column(unique = true)
     private String roll_no;
+
 }

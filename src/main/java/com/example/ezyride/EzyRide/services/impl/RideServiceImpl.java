@@ -5,6 +5,8 @@ import com.example.ezyride.EzyRide.dtos.RideDto;
 import com.example.ezyride.EzyRide.dtos.RideRequestDto;
 import com.example.ezyride.EzyRide.entities.Driver;
 import com.example.ezyride.EzyRide.entities.Ride;
+import com.example.ezyride.EzyRide.entities.Rider;
+import com.example.ezyride.EzyRide.entities.enums.RideStatus;
 import com.example.ezyride.EzyRide.handlers.RideRequestWebSocketHandler;
 import com.example.ezyride.EzyRide.repositories.RideRepository;
 import com.example.ezyride.EzyRide.services.RideService;
@@ -16,9 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -34,6 +34,7 @@ public class RideServiceImpl implements RideService {
     private final GeometryFactory geometryFactory;
     private final RideRequestWebSocketHandler rideRequestWebSocketHandler;
     private final RideRequestService rideRequestService;
+    private List<Rider> riderList = new ArrayList<>();
 
 
 
@@ -68,7 +69,13 @@ public class RideServiceImpl implements RideService {
 
         newRide.setPickUpLocation(pickUpLocation);
         newRide.setDropOffLocation(dropOffLocation);
-        newRide.setRider(riderService.getRiderById(riderId));
+        riderList.add(riderService.getRiderById(riderId));
+
+        newRide.setRiders(riderList);
+
+        int totalRiders = newRide.getTotalRiders();
+        newRide.setTotalRiders(++totalRiders);
+
         newRide.setDriver(driverService.getDriverById(Long.valueOf(driverId)));
         rideRepository.save(newRide);
         return modelMapper.map(newRide,RideDto.class);
@@ -116,7 +123,7 @@ public class RideServiceImpl implements RideService {
         CompletableFuture<String> future = new CompletableFuture<>();
         rideRequestService.rideRequestFutures.put(driverEmail, future);
 
-        rideRequestWebSocketHandler.sendRideRequestToDriver(driverEmail);
+        rideRequestWebSocketHandler.sendRideRequestToDriver(driverEmail,rideRequestDto);
         try {
             String driverResponse = future.get(60, TimeUnit.SECONDS);
             if ("RIDE_CONFIRMED".equals(driverResponse)) {
@@ -136,5 +143,17 @@ public class RideServiceImpl implements RideService {
         return null;
     }
 
+
+    public void startRide(RideDto rideDto) {
+        rideDto.setRideStatus(RideStatus.STARTED);
+    }
+
+    public void endRide(RideDto rideDto) {
+        rideDto.setRideStatus(RideStatus.ENDED);
+    }
+
+    public void cancelRide(RideDto rideDto) {
+        rideDto.setRideStatus(RideStatus.CANCELLED);
+    }
 
 }

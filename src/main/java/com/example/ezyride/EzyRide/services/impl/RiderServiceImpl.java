@@ -57,6 +57,7 @@ public class RiderServiceImpl implements RiderService {
 
     public RiderDto getAuthenticatedRiderDetails() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("user email"+ user.getEmail());
         RiderDto riderDto = modelMapper.map(riderRepository.findByEmail(user.getEmail()),RiderDto.class);
         riderDto.setName(user.getName(), riderDto.getUser());
         riderDto.setId(user.getId(), riderDto.getUser());

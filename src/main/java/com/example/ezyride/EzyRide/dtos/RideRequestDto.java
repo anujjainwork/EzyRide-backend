@@ -1,15 +1,9 @@
 package com.example.ezyride.EzyRide.dtos;
 
-import com.example.ezyride.EzyRide.entities.Rider;
 import com.example.ezyride.EzyRide.entities.enums.PaymentMethod;
 import com.example.ezyride.EzyRide.entities.enums.RideRequestStatus;
-import com.example.ezyride.EzyRide.handlers.PointSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 
@@ -23,9 +17,13 @@ public class RideRequestDto {
 
     private double[] dropOffLocation;
 
+    private String dropOffLocationName;
+
     private LocalDateTime requestedTime;
 
     private RiderDto rider;
+
+    private int totalMembers;
 
     private PaymentMethod paymentMethod;
 
