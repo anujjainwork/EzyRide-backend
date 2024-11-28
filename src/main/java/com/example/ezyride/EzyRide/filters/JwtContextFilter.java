@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,28 +28,57 @@ public class JwtContextFilter extends OncePerRequestFilter {
     @Autowired
     private final UserServiceImpl userService;
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestTokenHeader = request.getHeader("Authorization");
 
-        final String requestTokenHeader= request.getHeader("Authorization");
-        if(requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer")){
-            filterChain.doFilter(request,response);
+        // If the token is not present or does not start with "Bearer", pass the request along the filter chain
+        if (isInvalidToken(requestTokenHeader)) {
+            filterChain.doFilter(request, response);
             return;
         }
-        assert requestTokenHeader != null;
-        String token = requestTokenHeader.split("Bearer ")[1];
 
-        Long userId = jwtService.getUserIdFromToken(token);
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userService.getUserById(userId);
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            authenticationToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // Extract token from "Bearer " prefix
+        String token = extractToken(requestTokenHeader);
+
+        try {
+            // Retrieve user ID from token
+            Long userId = jwtService.getUserIdFromToken(token);
+
+            // If valid userId and no existing authentication, set the authentication in the context
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                authenticateUser(request, userId);
+            }
+
+        } catch (Exception e) {
+            // Log token validation or extraction errors (optional)
+            logger.error("Token validation failed: ", e);
         }
+
+        // Continue the filter chain
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isInvalidToken(String tokenHeader) {
+        return tokenHeader == null || !tokenHeader.startsWith(BEARER_PREFIX);
+    }
+
+    private String extractToken(String tokenHeader) {
+        // Remove the "Bearer " prefix and extract the token
+        return tokenHeader.split(" ")[1];
+    }
+
+    private void authenticateUser(HttpServletRequest request, Long userId) {
+        Optional<User> userOpt = Optional.ofNullable(userService.getUserById(userId));
+        userOpt.ifPresent(user -> {
+            // Set the authentication token in SecurityContextHolder
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    user, null, user.getAuthorities());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        });
     }
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
