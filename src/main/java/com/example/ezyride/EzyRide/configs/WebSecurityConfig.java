@@ -25,9 +25,14 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/location/**","/ride-request/**").permitAll()
+                                .requestMatchers("/auth/**", "/location/**","/ride-request/**","/h2-console/**").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .headers(httpSecurityHeadersConfigurer -> {
+                    httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> {
+                        frameOptionsConfig.disable();
+                    });
+                })
                 .addFilterBefore(jwtContextFilter, UsernamePasswordAuthenticationFilter.class); // Ensure correct filter configuration
         return http.build();
     }
