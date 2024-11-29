@@ -38,6 +38,11 @@ public class WebSecurityConfig {
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
+                .headers(httpSecurityHeadersConfigurer -> {
+                    httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> {
+                        frameOptionsConfig.disable();
+                    });
+                })
                 .addFilterBefore(jwtContextFilter, UsernamePasswordAuthenticationFilter.class); // Ensure correct filter configuration
         return http.build();
     }
