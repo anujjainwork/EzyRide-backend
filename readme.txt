@@ -31,12 +31,15 @@ I played a significant role in implementing the backend services, including User
 
 Here are the step-by-step instructions on how to download the GitHub code and run it on any device. You can add these instructions to your README file for users to easily set up the project.
 
-Step-by-Step Instructions to Download and Run the EzyRide Backend Project
+Step-by-Step Instructions to Download and Run the EzyRide Backend Project:
 Prerequisites
 Before you begin, ensure you have the following software installed on your system:
 Java 17 or higher - EzyRide Backend is built using Spring Boot, which requires Java.
 Maven - Used for building and managing the project.
-PostgreSQL - The backend uses a PostgreSQL database.
+Database - No need to install any database to run this project, H2-in_memory-database is used in this project which means you can access the database by the following link-
+http://localhost:8081/h2-console
+
+(put your port instead of 8081 after running the springboot project)
 Git - To clone the repository.
 IDE (optional) - You can use any IDE like IntelliJ IDEA, Eclipse, or VS Code for better development experience.
 ___
