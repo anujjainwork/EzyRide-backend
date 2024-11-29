@@ -25,7 +25,17 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/location/**","/ride-request/**","/h2-console/**").permitAll()
+                                .requestMatchers(
+                                        "/auth/**",          // Public APIs
+                                        "/location/**",
+                                        "/ride-request/**",
+                                        "/swagger-ui/**",    // Swagger UI
+                                        "/swagger-ui.html",  // Swagger legacy
+                                        "/v3/api-docs/**",   // OpenAPI docs
+                                        "/swagger-resources/**",
+                                        "/error/**",
+                                        "/webjars/**"      // Static assets for Swagger
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .headers(httpSecurityHeadersConfigurer -> {
