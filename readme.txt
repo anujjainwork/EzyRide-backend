@@ -24,6 +24,9 @@ I played a significant role in implementing the backend services, including User
 - Role Permissions:
   - Detailed permissions are implemented for each role to restrict access to specific API resources. Admins can manage users, while Users can view personal data and request rides.
 
+- Redis-Caching:
+  - Implemented Redis-caching for faster data retrieval and reduction API requests to the DB, making the system more efficient.
+  
 - Customizable System:
   - The system is designed to be flexible, allowing for easy addition of new roles and permissions without significant changes to the codebase.
 

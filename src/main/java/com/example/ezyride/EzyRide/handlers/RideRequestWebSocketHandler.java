@@ -1,10 +1,7 @@
 package com.example.ezyride.EzyRide.handlers;
 
-import com.example.ezyride.EzyRide.controllers.RideController;
 import com.example.ezyride.EzyRide.dtos.RideRequestDto;
 import com.example.ezyride.EzyRide.services.impl.RideRequestService;
-import com.example.ezyride.EzyRide.services.impl.RideServiceImpl;
-import com.example.ezyride.EzyRide.services.impl.RiderServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
