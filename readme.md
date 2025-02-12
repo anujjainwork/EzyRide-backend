@@ -6,7 +6,6 @@ The **EzyRide Backend** is a **Spring Boot** application powered by **PostgreSQL
 
 ## Features
 
-### Authentication & Authorization
 - **Spring Security** for securing the backend system and database
 - **JWT-Based Authentication**: Secure user sessions using JSON Web Tokens.
 - **Role-Based Access Control (RBAC)**:
@@ -14,6 +13,8 @@ The **EzyRide Backend** is a **Spring Boot** application powered by **PostgreSQL
   - Access permissions enforced based on roles.
   - Unauthorized users receive **Access Denied** responses.
 - **Secure Password Storage**: Passwords are securely hashed before storing.
+- **Websocket Connection**: For real time updates
+- **MVC**: Built on industry standard architecture.
 
 ---
 ## 📥 Architecture & Database Schema
